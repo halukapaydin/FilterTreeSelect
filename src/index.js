@@ -74,32 +74,75 @@ const treeData = [
   }
 ];
 
-const Demo = () => {
-  let [filterValue, setFilterValue] = useState(undefined);
+const contains = (title, filterValue) => {
+  if (!filterValue) {
+    return true;
+  }
+  return title.includes(filterValue);
+};
+
+const _filterTreeData = (treeData, filterValue, parent) => {
+  treeData.forEach((node) => {
+    node._visible = contains(node.title, filterValue);
+    node._parent = parent;
+    if (node._visible) {
+      let p = parent;
+      while (p) {
+        p._visible = true;
+        p = p._parent;
+      }
+    }
+
+    if (node.children) {
+      _filterTreeData(node.children, filterValue, node);
+    }
+  });
+};
+
+const filterTreeData = (treeData, filterValue) => {
+  let filteredTreeData = [...treeData];
+  _filterTreeData(filteredTreeData, filterValue, undefined);
+  return filteredTreeData;
+};
+
+const renderTreeNode = (nodes) => {
+  return (
+    nodes &&
+    nodes.map((node) => {
+      let display = "none";
+      if (node._visible === undefined || node._visible) {
+        display = "inherit";
+      }
+      console.log(node.title, node._visible, display);
+      return (
+        <Tree.TreeNode
+          key={node.key}
+          title={node.title}
+          style={{ display: display }}
+          expanded={true}
+        >
+          {renderTreeNode(node.children)}
+        </Tree.TreeNode>
+      );
+    })
+  );
+};
+
+const FilterTreeSelect = () => {
+  let [filteredData, setFilteredData] = useState(treeData);
   return (
     <div>
       <Input.Search
         onSearch={(value) => {
-          setFilterValue(value);
+          const data = filterTreeData(treeData, value);
+          setFilteredData(data);
         }}
       />
-      <div>{filterValue}</div>
-      <Tree
-        checkable
-        defaultExpandAll
-        treeData={treeData}
-        filterTreeNode={(node) => {
-          let filter = false;
-          if (!filterValue) {
-            return filter;
-          }
-          filter = node.title.includes(filterValue);
-          console.log(node.title, filter);
-          return filter;
-        }}
-      />
+      <Tree checkable defaultExpandAll>
+        {renderTreeNode(filteredData)}
+      </Tree>
     </div>
   );
 };
 
-ReactDOM.render(<Demo />, document.getElementById("container"));
+ReactDOM.render(<FilterTreeSelect />, document.getElementById("container"));
