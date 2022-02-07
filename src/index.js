@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
 import "./index.css";
 import FilterTree from "./FilterTree";
+import FilterTreeSelect from "./FilterTreeSelect";
 const treeData = [
   {
     title: "0-0",
@@ -75,6 +76,8 @@ const treeData = [
 ];
 
 ReactDOM.render(
-  <FilterTree treeData={treeData} />,
+  <FilterTreeSelect data={treeData} value={["0-0-0-1"]} onChange={(v)=>{
+    console.log("value", v);
+  }}/>,
   document.getElementById("container")
 );

@@ -1,0 +1,12 @@
+.filter-tree-select{}
+.filter-tree-select .ant-input{
+    display: flex;
+    justify-content: space-between;
+}
+
+.filter-tree-select-overlay{
+    padding: 0px;
+}
+.filter-tree-select-overlay .ant-popover-arrow{
+    display: none;
+}
